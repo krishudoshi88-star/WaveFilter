@@ -1,0 +1,33 @@
+.gesture-icon {
+  display: block;
+  overflow: visible;
+}
+
+.gesture-icon__backdrop {
+  fill: var(--bg-panel-hover);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.gesture-icon--active .gesture-icon__backdrop {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+
+.gesture-icon__bone {
+  stroke: var(--text-dim);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.gesture-icon--active .gesture-icon__bone {
+  stroke: var(--accent-strong);
+}
+
+.gesture-icon__joint {
+  fill: var(--text);
+}
+
+.gesture-icon--active .gesture-icon__joint {
+  fill: white;
+}

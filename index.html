@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WaveFilter — AR Gesture Filters</title>
+    <!--
+      @mediapipe/hands and @mediapipe/selfie_segmentation are Closure-compiled
+      scripts that only attach to the global object (no ESM/CJS exports), so
+      they're loaded as classic scripts here and consumed via `window.Hands` /
+      `window.SelfieSegmentation` (see src/mediapipe-globals.d.ts) instead of
+      `import`, which a bundler can't statically link.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1675465747/selfie_segmentation.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
