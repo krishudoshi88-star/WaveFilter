@@ -6,24 +6,35 @@ const MEDIAPIPE_VERSION = '0.4.1675469240'
 
 export type HandsResultListener = (hands: DetectedHand[]) => void
 
+/**
+ * MediaPipe Hands is optional at runtime: if it fails to load (offline,
+ * blocked CDN, ad blocker), this degrades to "no hands detected" instead of
+ * taking down the whole session — the video feed and non-hand-attached
+ * filters keep working fine without it.
+ */
 export class HandsController {
-  private hands: Hands
+  private hands: Hands | null
   private video: HTMLVideoElement | null = null
   private rafId: number | null = null
   private listeners = new Set<HandsResultListener>()
   private running = false
 
   constructor() {
-    this.hands = new window.Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@${MEDIAPIPE_VERSION}/${file}`,
-    })
-    this.hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.7,
-      minTrackingConfidence: 0.6,
-    })
-    this.hands.onResults((results) => this.handleResults(results))
+    try {
+      this.hands = new window.Hands({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@${MEDIAPIPE_VERSION}/${file}`,
+      })
+      this.hands.setOptions({
+        maxNumHands: 2,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.7,
+        minTrackingConfidence: 0.6,
+      })
+      this.hands.onResults((results) => this.handleResults(results))
+    } catch (err) {
+      console.warn('MediaPipe Hands unavailable; gesture detection will be disabled.', err)
+      this.hands = null
+    }
   }
 
   onResults(listener: HandsResultListener): () => void {
@@ -32,10 +43,11 @@ export class HandsController {
   }
 
   async start(video: HTMLVideoElement) {
+    if (!this.hands) return
     this.video = video
     this.running = true
     const loop = async () => {
-      if (!this.running || !this.video) return
+      if (!this.running || !this.video || !this.hands) return
       if (this.video.readyState >= 2) {
         await this.hands.send({ image: this.video })
       }
@@ -54,7 +66,7 @@ export class HandsController {
 
   destroy() {
     this.stop()
-    this.hands.close()
+    this.hands?.close()
     this.listeners.clear()
   }
 
